@@ -1,0 +1,22 @@
+helloworld:
+  image: ubuntu
+  command: /bin/bash -c "while true; do echo log-helloworld hello world; sleep 1; done"
+elasticsearch:
+  image: elasticsearch
+  ports:
+    - "49200:9200"
+    - "49300:9300"
+fluentd-es:
+  image: godofwharf/fluentd-es
+  volumes:
+    - /var/lib/docker/containers:/var/lib/docker/containers:rw
+  links:
+    - elasticsearch:es
+  environment:
+    - HOST=192.168.99.100
+    - BUFFER_CHUNK_LIMIT=64K
+    - BUFFER_QUEUE_LIMIT=128
+    - OPENTSDB_HOST=localhost
+    - OPENTSDB_PORT=4242
+    - LOG_PATTERN=log ^log-*
+    - ES_HOSTS=es:9200

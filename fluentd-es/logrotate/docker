@@ -1,0 +1,20 @@
+/var/lib/docker/containers/*/*.log {
+  size 100M
+  rotate 4
+  missingok
+  compress
+  delaycompress
+  copytruncate
+}
+/tmp/mesos/slaves/*/frameworks/*/executors/*/runs/*/stdout {
+  size 100M
+  rotate 0
+  missingok
+  copytruncate
+}
+/tmp/mesos/slaves/*/frameworks/*/executors/*/runs/*/stderr {
+  size 100M
+  rotate 0
+  missingok
+  copytruncate
+}

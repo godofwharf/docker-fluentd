@@ -1,0 +1,61 @@
+{
+    "order": 0,
+    "template": "mesos-logs-*",
+    "settings": {
+        "index.number_of_replicas": "1",
+        "index.number_of_shards": "5"
+    },
+    "mappings": {
+        "fluentd": {
+            "_source": {
+                "enabled": false
+            },
+            "dynamic_templates": [
+                {
+                    "template_timestamp": {
+                        "mapping": {
+                            "index": "not_analyzed",
+                            "store": true,
+                            "fielddata": {
+                                "format": "doc_values"
+                            },
+                            "type": "date",
+                            "format": "yyyyMMdd'\''T'\''HHmmssZZ"
+                        },
+                        "match": "@timestamp|time"
+                    }
+                },
+                {
+                    "template_log": {
+                        "mapping": {
+                            "store": true
+                        },
+                        "match": "log",
+                        "match_mapping_type": "string"
+                    }
+                },
+                {
+                    "template_store_dv": {
+                        "mapping": {
+                            "index": "not_analyzed",
+                            "store": true,
+                            "fielddata": {
+                                "format": "doc_values"
+                            }
+                        },
+                        "match_mapping_type": "date|boolean|double|long|integer|string",
+                        "match_pattern": "regex",
+                        "path_match": ".*"
+                    }
+                }
+            ],
+            "_timestamp": {
+                "enabled": true
+            },
+            "_all": {
+                "enabled": false
+            }
+        }
+    },
+    "aliases": {}
+}

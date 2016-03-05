@@ -1,0 +1,33 @@
+helloworld:
+  image: ubuntu
+  command: /bin/bash -c "while true; do echo log-helloworld hello world; sleep 1; done"
+zookeeper:
+  image: wurstmeister/zookeeper
+  ports:
+    - "2181:2181"
+kafka:
+  image: wurstmeister/kafka
+  ports:
+    - "9092:9092"
+  links:
+    - zookeeper:zk
+  environment:
+    KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+    KAFKA_CREATE_TOPICS: "log:1:1"
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+fluentd-kakfa:
+  image: godofwharf/fluentd-kafka
+  volumes:
+    - /var/lib/docker/containers:/var/lib/docker/containers:rw
+  links:
+    - kafka:kfk
+  environment:
+    - HOST=192.168.99.100
+    - BUFFER_CHUNK_LIMIT=64K
+    - BUFFER_QUEUE_LIMIT=128
+    - OPENTSDB_HOST=localhost
+    - OPENTSDB_PORT=4242
+    - LOG_PATTERN=log ^log-*
+    - KAFKA_BROKER=kfk:9092
+    - KAFKA_TOPIC=log
